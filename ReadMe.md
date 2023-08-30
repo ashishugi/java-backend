@@ -86,7 +86,7 @@
     Ex: @Component, @Service, @Repository etc. these annotation will create beans, which are further taken reference and injected whenever required. 
     <strong>using annotation / beans over the class: it means spring does the instantiation/initialisation of that class/object for us. And this can be used at other places just by constructor injection. In this way other service do not need to create any other instance of the same within the application context. </strong>
     
-    ```
+    <code>
     @RestController
     public class CustomerController {
         private final CustomerService customerService;
@@ -96,7 +96,7 @@
             this.customerService = customerService;
         }
     }
-    
+    </code>
    
     the parameter customerService in constructor comes from applicationContext,
     Adding @Autowired means that: we are saying that go and find the bean of CustomerService and inject it here.
@@ -110,12 +110,12 @@
     
     OR
     
-    
+   
     @Inject
     public CustomerController(CustomerService customerService) { // this parameter comes from application context, where all the beans are present.
         this.customerService = customerService;
     }
-   ```
+  
     It depends on different - different frameworks, but the meaning remains the same. 
 24. Application Context: It provides basic functionalities for managing beans. The default bean scope - singleton beans - are created once and then re-used forever.
 ![Screenshot 2023-08-23 at 11.07.08 PM.png](..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fzz%2Ftxdp3zpn54l9qbhczqwj7vdh0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_pnxlVj%2FScreenshot%202023-08-23%20at%2011.07.08%20PM.png)

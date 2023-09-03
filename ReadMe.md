@@ -117,139 +117,139 @@
     }
   
     It depends on different - different frameworks, but the meaning remains the same. 
-24. Application Context: It provides basic functionalities for managing beans. The default bean scope - singleton beans - are created once and then re-used forever.
+1. Application Context: It provides basic functionalities for managing beans. The default bean scope - singleton beans - are created once and then re-used forever.
 ![Screenshot 2023-08-23 at 11.07.08 PM.png](..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fzz%2Ftxdp3zpn54l9qbhczqwj7vdh0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_pnxlVj%2FScreenshot%202023-08-23%20at%2011.07.08%20PM.png)
-25. How to see all the beans of the application and application context ? : 
-    ```
+2. How to see all the beans of the application and application context ? : 
+   ```
     
-    ConfigurableApplicationContext applicationContext = SpringApplication.run(Main.class);
+   ConfigurableApplicationContext applicationContext = SpringApplication.run(Main.class);
     
-    String[] beanDefinationNames = applicationContext.getBeanDefinitionNames();
-    for(String beanDefinationName: beanDefinationNames) {
-        System.out.println(beanDefinationName);
-    }
-    ```
-    We can see customerController, customerDataAccessService, customerService beans along with lot other beans.
-    We can also see bean using spring actuators.
-26. Inversion of Control (IOC) : Dependency injection is the way we achieve inversion of control for both bean and application context.
-27. Bean Scope:
-    Singleton : single object instance per spring IOC container
-    Prototype: Instead of reusing single bean everytime we get new instance every time.
-    Request: Till the life cycle of single http request
-    Session: till lifecycle of single http session
-    Global session: till life of global http session
+   String[] beanDefinationNames = applicationContext.getBeanDefinitionNames();
+   for(String beanDefinationName: beanDefinationNames) {
+       System.out.println(beanDefinationName);
+   }
+   ```
+   We can see customerController, customerDataAccessService, customerService beans along with lot other beans.
+   We can also see bean using spring actuators.
+3. Inversion of Control (IOC) : Dependency injection is the way we achieve inversion of control for both bean and application context.
+4. Bean Scope:
+   Singleton : single object instance per spring IOC container
+   Prototype: Instead of reusing single bean everytime we get new instance every time.
+   Request: Till the life cycle of single http request
+   Session: till lifecycle of single http session
+   Global session: till life of global http session
     
-    We can change the scope of the bean as well : 
-    ```
-    @Bean("foo")
-    @Scope()
-    public Foo foo(value = ConfigurableBeanFactor.SCOPE_SINGLETON) {
-        return new Foo("foo");
-    }
-    ```
-28. Bean : A bean is an object that spring container instantiate, assembles and manages the entire life cycle for us.
-    Let say a bean is created outside the applicationContext(outside main)
-    ```
-        public static void main(String[] args) {
-    SpringApplication.run(Main.class, args);
-    }
+   We can change the scope of the bean as well : 
+   ```
+   @Bean("foo")
+   @Scope()
+   public Foo foo(value = ConfigurableBeanFactor.SCOPE_SINGLETON) {
+       return new Foo("foo");
+   }
+   ```
+5. Bean : A bean is an object that spring container instantiate, assembles and manages the entire life cycle for us.
+   Let say a bean is created outside the applicationContext(outside main)
+   ```
+       public static void main(String[] args) {
+   SpringApplication.run(Main.class, args);
+   }
 
-    @Bean("rename")
-    public Foo getFoo() {
-        return new Foo("bar");
-    }
+   @Bean("rename")
+   public Foo getFoo() {
+       return new Foo("bar");
+   }
     
-    FooService.java 
-    // here it can be autowired/injected: 
+   FooService.java 
+   // here it can be autowired/injected: 
     
     
-    private final Main.Foo foo;
+   private final Main.Foo foo;
 
-    public FooService(Main.Foo foo) {
-        this.foo = foo;
-        System.out.println();
+   public FooService(Main.Foo foo) {
+       this.foo = foo;
+       System.out.println();
+   }
+   ```
+   In the case when bean could not be found then we see this kind of error: Parameter 0 of constructor in com.abc.customer.FooService required a bean of type 'com.abc.Main$Foo' that could not be found.
+6. Error handling in spring: 
+   ```
+   ResourceNotFound.java
+    
+   @ResponseStatus(code = HttpStatus.NOT_FOUND)
+   public class ResourceNotFound extends RuntimeException{
+    public ResourceNotFound(String message) {
+     super(message);
     }
-    ```
-    In the case when bean could not be found then we see this kind of error: Parameter 0 of constructor in com.abc.customer.FooService required a bean of type 'com.abc.Main$Foo' that could not be found.
-29. Error handling in spring: 
-    ```
-    ResourceNotFound.java
+   }
     
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public class ResourceNotFound extends RuntimeException{
-     public ResourceNotFound(String message) {
-      super(message);
-     }
-    }
+   CustomerService.java: 
     
-    CustomerService.java: 
+   customerDao.selectCustomerById(id)
+               .orElseThrow(() -> new ResourceNotFound("customer with id [%s] not found".formatted(id)));
     
-    customerDao.selectCustomerById(id)
-                .orElseThrow(() -> new ResourceNotFound("customer with id [%s] not found".formatted(id)));
+   application.yml
     
-    application.yml
+   spring:
+     error: 
+       include-message: always
+   ```
     
-    spring:
-      error: 
-        include-message: always
-    ```
-    
-    To include message give in the response add the application.yml settings as well.
-30. Docker(a bit about it):
-    docker --version
-    docker run hello-world
+   To include message give in the response add the application.yml settings as well.
+7. Docker(a bit about it):
+   docker --version
+   docker run hello-world
 
-    ```
-    services:
+   ```
+   services:
+   db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: amigoscode
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+   volumes:
+   - db:/data/postgres
+   ports:
+     - "5433:5432"
+     networks:
+     - db
+     restart: unless-stopped
+    
+   networks:
     db:
-     container_name: postgres
-     image: postgres
-     environment:
-       POSTGRES_USER: amigoscode
-       POSTGRES_PASSWORD: password
-       PGDATA: /data/postgres
-    volumes:
-    - db:/data/postgres
-    ports:
-      - "5433:5432"
-      networks:
-      - db
-      restart: unless-stopped
+    driver: bridge
     
-    networks:
-     db:
-     driver: bridge
-    
-    volumes:
-     db:
-    ```
-    1. docker compose up -d (pull the postgre)
-    2. docker compose ps (shows the running files in docker)
-    to changes the port changes "5433:5432" --> left one --> 5433 to some other port
-    3. docker exec -it postgres bash (docker execute interactive mode name_of_container, it will give container bash/terminal)
-    4. psql -U amigoscode
-    5. \l
-    6. \q (exist)
-    7. control + d (to exist finally)
-    We can connect to database using intellij as well, rightside naviagation --> databases --> ddl source --> postgres
-31. Spring data JPA (Jakarta Persistence API) : It describes the management of relation data in Java application. Previously known as Javax Persistence api. Spring data JPA depends on JDBC driver.
-32. JDBC (Java Database connectivity): JDBC is an API(Application programming interface) used in java programming to interact with databases. The classes and interfaces of JDBC allow the application to send requests made by users to the specified database.
-    1. JDBC driver manager :  It loads a database-specific driver in an application to establish a connection with a database. It is used to make a database-specific call to the database to process the user request.
-    2. JDBC drivers: To communicate with a data source through JDBC, you need a JDBC driver that intelligently communicates with the respective data source.
-    <strong> Application --> JDBC API --> JDBC driver manager  --> JDBC driver --> Database </strong>
-    Adding postgresql JDBC driver:
-       <dependency>
-         <groupId>org.postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-         <scope>runtime</scope>
-       </dependency>
-    adding spring data JPA:
-       <dependency>
-         <groupId>org.springframework.boot</groupId>
-         <artifactId>spring-boot-starter-data-jpa</artifactId>
-       </dependency>
+   volumes:
+    db:
+   ```
+   1. docker compose up -d (pull the postgre)
+   2. docker compose ps (shows the running files in docker)
+   to changes the port changes "5433:5432" --> left one --> 5433 to some other port
+   3. docker exec -it postgres bash (docker execute interactive mode name_of_container, it will give container bash/terminal)
+   4. psql -U amigoscode
+   5. \l
+   6. \q (exist)
+   7. control + d (to exist finally)
+   We can connect to database using intellij as well, rightside naviagation --> databases --> ddl source --> postgres
+8. Spring data JPA (Jakarta Persistence API) : It describes the management of relation data in Java application. Previously known as Javax Persistence api. Spring data JPA depends on JDBC driver.
+9. JDBC (Java Database connectivity): JDBC is an API(Application programming interface) used in java programming to interact with databases. The classes and interfaces of JDBC allow the application to send requests made by users to the specified database.
+   1. JDBC driver manager :  It loads a database-specific driver in an application to establish a connection with a database. It is used to make a database-specific call to the database to process the user request.
+   2. JDBC drivers: To communicate with a data source through JDBC, you need a JDBC driver that intelligently communicates with the respective data source.
+   <strong> Application --> JDBC API --> JDBC driver manager  --> JDBC driver --> Database </strong>
+   Adding postgresql JDBC driver:
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <scope>runtime</scope>
+      </dependency>
+   adding spring data JPA:
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+      </dependency>
         
-33. @Entity: By spring JPA, 
+10. @Entity: By spring JPA, 
     command + P -> to get method parameters options in intellij editor 
     ```
     @Entity
@@ -265,7 +265,7 @@
       )
       private Integer id;
     ```
-34. @Qualifier: From below example we can see that there are two implementations of CustomerServiceDao(CustomerListDataAccessService and CustomerJPADataAccessService),
+11. @Qualifier: From below example we can see that there are two implementations of CustomerServiceDao(CustomerListDataAccessService and CustomerJPADataAccessService),
     Due to this CustomerService get confuse which bean to inject in, hence we have named our bean with "list" and "jpa",
     and in CustomerService we can give either of the name that we wanted to use inside @Qualifier.
     ```
@@ -324,5 +324,13 @@
     
     
     ```
+12. @PostMapping:
+    ```
+    @PostMapping
+     public void registerCustomer(@RequestBody CustomerRegistrationRequest request) {
+     customerService.addCustomer(request);
+    }
+    ```
+13. 
 
-LAST VIDEO : 81
+LAST VIDEO : 87

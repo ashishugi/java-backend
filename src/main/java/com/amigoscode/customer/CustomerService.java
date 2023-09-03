@@ -1,5 +1,7 @@
 package com.amigoscode.customer;
 
+import com.amigoscode.exception.DuplicateResourceException;
+import com.amigoscode.exception.RequestValidationException;
 import com.amigoscode.exception.ResourceNotFound;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,4 +25,52 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFound("customer with id [%s] not found".formatted(id)));
     }
 
+    public void addCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
+        //check if email exist
+        if(customerDao.existsPersonWithEmail(customerRegistrationRequest.email())) {
+            throw new DuplicateResourceException("email already taken");
+        }
+        //add
+        Customer customer = new Customer(
+                customerRegistrationRequest.name(),
+                customerRegistrationRequest.email(),
+                customerRegistrationRequest.age());
+
+        customerDao.insertCustomer(customer);
+    }
+
+    public void deleteCustomerById(Integer id) {
+        if(!customerDao.existPersonWithId(id)) {
+            throw new ResourceNotFound("Id does not exist");
+        }
+        customerDao.deleteCustomerById(id);
+    }
+
+    public void updateCustomerById(Integer id, CustomerUpdateRequest updateRequest) {
+        Customer customer = getAllCustomerById(id);
+
+        boolean isChanged = false;
+
+        if(updateRequest.name() != null && !updateRequest.name().equals(customer.getName())) {
+            customer.setName(updateRequest.name());
+            isChanged = true;
+        }
+
+        if(updateRequest.age() != null && updateRequest.age() != customer.getAge()) {
+            customer.setAge(updateRequest.age());
+            isChanged = true;
+        }
+
+        if(updateRequest.email() != null && !updateRequest.email().equals(customer.getEmail())) {
+            if(customerDao.existsPersonWithEmail(updateRequest.email())) {
+                throw new DuplicateResourceException("email already taken");
+            }
+            customer.setEmail(updateRequest.email());
+            isChanged = true;
+        }
+        if(!isChanged) {
+            throw new RequestValidationException("No data changes are found");
+        }
+        customerDao.updateCustomerById(customer);
+    }
 }

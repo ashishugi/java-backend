@@ -29,7 +29,7 @@ public class Main {
             Customer jas = new Customer("Aditya", "Aditya@gmail.com", 23);
             List<Customer> customers = List.of(alex, jas);
 
-            customerRepository.saveAll(customers);
+//            customerRepository.saveAll(customers);
         };
     }
 

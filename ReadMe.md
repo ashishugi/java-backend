@@ -232,7 +232,7 @@
    6. \q (exist)
    7. control + d (to exist finally)
    We can connect to database using intellij as well, rightside naviagation --> databases --> ddl source --> postgres
-8. Spring data JPA (Jakarta Persistence API) : It describes the management of relation data in Java application. Previously known as Javax Persistence api. Spring data JPA depends on JDBC driver.
+8. Spring data JPA (Jakarta Persistence API) : It describes the management of relation data in Java application. Previously known as Javax Persistence api. Spring data JPA depends on JDBC driver. JPA uses hibernate internally for map the entities.
 9. JDBC (Java Database connectivity): JDBC is an API(Application programming interface) used in java programming to interact with databases. The classes and interfaces of JDBC allow the application to send requests made by users to the specified database.
    1. JDBC driver manager :  It loads a database-specific driver in an application to establish a connection with a database. It is used to make a database-specific call to the database to process the user request.
    2. JDBC drivers: To communicate with a data source through JDBC, you need a JDBC driver that intelligently communicates with the respective data source.
@@ -331,6 +331,6 @@
      customerService.addCustomer(request);
     }
     ```
-13. 
 
-LAST VIDEO : 87
+<h3>Next part on ReadMe_JDBC.md</h3>
+

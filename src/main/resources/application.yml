@@ -8,7 +8,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/customer
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

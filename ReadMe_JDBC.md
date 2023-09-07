@@ -55,7 +55,41 @@
    resource/db/migration/V1__Initial_Setup.sql
    NOTE: here v1 represents the version1, In you run the application after making V1__...sql file, then you cannnot change anything in the content of that file as this history and content property will be stored by flyway_schema_history DB.
    Hence to add then changes we need to make a new file V2__NEW_NAME.sql
-7. 
+7. Replacing JPA enitity with flyway DB:
+   below is the replacement of CustomerEntity of JPA with sql 
+
+   ```
+        @Entity
+   public class Customer {
+   @Id
+   @SequenceGenerator(
+   name = "customer_id_sequence",
+   sequenceName = "customer_id_sequence"
+   )
+   @GeneratedValue(
+   strategy = GenerationType.SEQUENCE,
+   generator = "customer_id_sequence"
+   )
+   private Integer id;
+   @Column(
+   nullable = false
+   )
+   private String name;
+   @Column( ........................................... etc
+   
+   SQL :
+   CREATE TABLE customer(
+         id BIGSERIAL DEFAULT PRIMARY KEY ,
+         name TEXT NOT NULL ,
+         email TEXT UNIQUE NOT NULL ,
+         age INT NOT NULL
+         );
+      ```
+   also add below configuration in application.yml:
+   spring: 
+    flyway:
+     baselineOnMigrate: true
+8. 
 
 
-LAST VIDEO : 94
+LAST VIDEO : 103

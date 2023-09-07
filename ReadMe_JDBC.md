@@ -50,6 +50,11 @@
 6. ddl-auto: create-drop (application.yml) : By using create-drop property, JPA + Hibernate automatically creates the database for us.
    if we do ddl-auto: none - then database will not be created automatically, we must create the database first to insert the data in it.
    For create database without using JPA + Hibernate we have tools database migration tools  like:  Flyway, Liquibase etc.
+
+   Flyway: 
+   resource/db/migration/V1__Initial_Setup.sql
+   NOTE: here v1 represents the version1, In you run the application after making V1__...sql file, then you cannnot change anything in the content of that file as this history and content property will be stored by flyway_schema_history DB.
+   Hence to add then changes we need to make a new file V2__NEW_NAME.sql
 7. 
 
 

@@ -2,6 +2,8 @@ package com.amigoscode;
 
 import com.amigoscode.customer.Customer;
 import com.amigoscode.customer.CustomerRepository;
+import com.github.javafaker.Faker;
+import com.github.javafaker.Name;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Random;
 
 @SpringBootApplication
 public class Main {
@@ -25,11 +28,15 @@ public class Main {
     @Bean
     CommandLineRunner runner(CustomerRepository customerRepository) {
         return args -> {
-            Customer alex = new Customer("Harsh", "harsh@gmail.com", 234);
-            Customer jas = new Customer("Aditya", "Aditya@gmail.com", 23);
-            List<Customer> customers = List.of(alex, jas);
+            Faker faker = new Faker();
+            Name name = faker.name();
+            Random random = new Random();
+            String firstName = name.firstName();
+            String lastName = name.lastName();
 
-//            customerRepository.saveAll(customers);
+            Customer customer = new Customer(firstName+ " " + lastName, firstName.toLowerCase() + "."+ lastName.toLowerCase() + "@example.com", random.nextInt(16, 99)); // [16, 99] close/inner bound
+
+            customerRepository.save(customer);
         };
     }
 

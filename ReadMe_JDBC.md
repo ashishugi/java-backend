@@ -89,8 +89,100 @@
    spring: 
     flyway:
      baselineOnMigrate: true
-8. 
-<img width="1648" alt="Screenshot 2023-09-09 at 5 39 28 PM" src="https://github.com/ashishugi/java-react-fullstack/assets/46626591/b135f88b-e5df-431a-8a58-d8f41d910d4d">
+8. Making Entity using JDBC and flyway: 
+   ```
+   v1__intial_setup.sql:
+   
+   CREATE SEQUENCE customer_id_seq;
+
+   CREATE TABLE customer(
+   id BIGINT DEFAULT nextval('customer_id_seq') PRIMARY KEY , //==> not the name here: customer_id_seq,  
+   name TEXT NOT NULL ,
+   email TEXT UNIQUE NOT NULL ,
+   age INT NOT NULL
+   );
+   
+   OR
+   CREATE TABLE customer(
+    id BIGSERIAL PRIMARY KEY , // check customer db, that which name is create for sequence generation.
+    name TEXT NOT NULL ,
+    email TEXT NOT NULL ,
+    age INT NOT NULL
+   );
+   v2__adding_unique_constraint_to_customer: 
+   
+   ALTER TABLE customer ADD CONSTRAINT customer_unique_email UNIQUE (email); /// here a separate indexing get created for this given constraint name as :customer_unique_email
+   
+   
+   customer.java(Entity):
+   
+   @Entity
+   @Table(
+   name = "customer",
+    uniqueConstraints = {
+     @UniqueConstraint(
+      name = "customer_unique_email",
+      columnNames = "email"
+     )
+    }
+   )
+   public class Customer {
+   @Id
+   @SequenceGenerator(
+    name = "customer_id_seq",
+    sequenceName = "customer_id_seq",
+    initialValue = 1,
+    allocationSize = 1
+   )
+   @GeneratedValue(
+    strategy = GenerationType.SEQUENCE,
+    generator = "customer_id_seq"
+   )
+   private Integer id;
+   @Column(
+    nullable = false
+   )
+   private String name;
+   @Column(
+    nullable = false
+   )
+   private String email;
+   
+   ```
+9. Maven faker dependency: https://github.com/DiUS/java-faker
+   ```
+   <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+   <dependency>
+       <groupId>com.github.javafaker</groupId>
+       <artifactId>javafaker</artifactId>
+       <version>1.0.2</version>
+   </dependency>
+
+   ```
+   j
+10. Spring classpath: The Spring classpath refers to the set of directories and JAR files that Spring scans for resources, configurations, and classes.
+    It is essentially a collection of locations where Spring looks for files and classes needed to configure and run your Spring application.
+    The Spring classpath can include directories containing configuration files (e.g., XML or Java-based configuration), compiled Java classes, property files, and other resources used by your application.
+
+11. Spring Application Context: The Spring application context, on the other hand, is a runtime container for managing beans, configurations, and other application components.
+    It is responsible for creating and managing beans (objects) defined in your Spring configuration, and it provides various services such as dependency injection and lifecycle management.
+    The Spring application context is typically created based on the configuration files and classes found on the Spring classpath.
+
+12. JDBCTemplate (JDBC): We will be using JDBCTemplate for implementing JDBC as it helps in doing less errors:
+
+    <img width="1648" alt="Screenshot 2023-09-09 at 5 39 28 PM" src="https://github.com/ashishugi/java-react-fullstack/assets/46626591/b135f88b-e5df-431a-8a58-d8f41d910d4d">
+    
+   Here we do not need to make Bean as JDBCTemplate will be instantiated for us (As we have spring data JDBC on classpath, it will instantiate it in spring application context and we just need to inject this instantiated object)
+   ```
+   @Repository("jdbc")
+   public class CustomerJDBCDataAccessService implements CustomerDao{
+    private final JdbcTemplate jdbcTemplate;
+
+    public CustomerJDBCDataAccessService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+   ```
+13. 
 
 
-LAST VIDEO : 103
+LAST VIDEO : 107

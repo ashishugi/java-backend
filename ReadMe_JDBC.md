@@ -90,6 +90,7 @@
     flyway:
      baselineOnMigrate: true
 8. 
+<img width="1648" alt="Screenshot 2023-09-09 at 5 39 28 PM" src="https://github.com/ashishugi/java-react-fullstack/assets/46626591/b135f88b-e5df-431a-8a58-d8f41d910d4d">
 
 
 LAST VIDEO : 103

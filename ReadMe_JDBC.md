@@ -186,9 +186,9 @@
         this.jdbcTemplate = jdbcTemplate;
     }
    ```
-   
-    Selecting all from the DB:
-    ```
+Selecting all from the DB:
+
+```
    import org.springframework.jdbc.core.RowMapper;
    
    public List<Customer> selectAllCustomer() {
@@ -215,7 +215,8 @@
     }
    ```
    Insert into DataBase:
-    ```
+
+```
    public void insertCustomer(Customer customer) {
         var sql = """
                   INSERT INTO customer(name, email, age) 

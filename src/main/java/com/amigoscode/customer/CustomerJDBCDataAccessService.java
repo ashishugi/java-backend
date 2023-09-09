@@ -1,7 +1,6 @@
 package com.amigoscode.customer;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,9 +9,10 @@ import java.util.Optional;
 @Repository("jdbc")
 public class CustomerJDBCDataAccessService implements CustomerDao{
     private final JdbcTemplate jdbcTemplate; // this is similar to CustomerRepository that we used in CustomerJPADataAccessService.java
-
-    public CustomerJDBCDataAccessService(JdbcTemplate jdbcTemplate) {
+    private final CustomerRowMapper customerRowMapper;
+    public CustomerJDBCDataAccessService(JdbcTemplate jdbcTemplate, CustomerRowMapper customerRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.customerRowMapper = customerRowMapper;
     }
 
     @Override
@@ -22,26 +22,22 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
                 FROM customer
                 """;
 
-        RowMapper<Customer> customerRowMapper = (rs, rowNum) -> {
-            Customer customer = new Customer(
-                    rs.getInt("id"), // table column name
-                    rs.getString("name"),
-                    rs.getString("email"),
-                    rs.getInt("age")
-            );
-            return customer;
-        }; // this row mapper helps to map the row we get to java object. So after we get a row, it maps to a java object
-        // rs -> it is a pointer which points to a row of data in the table and data is mapped to its java object with column name given.
-        // rowNum -> It means the current row we are working on, after the current row is mapped, this rowNum is moved to next row and so on.
-
-        List<Customer> customers =  jdbcTemplate.query(sql, customerRowMapper); // sql, row mapper =
-
-        return customers;
+        return jdbcTemplate.query(sql, customerRowMapper);
     }
 
     @Override
     public Optional<Customer> selectCustomerById(Integer id) {
-        return Optional.empty();
+        var sql = """
+                SELECT id, name, email, age
+                FROM customer 
+                WHERE id = ?
+                """;
+
+        return jdbcTemplate.query(sql, customerRowMapper, id)
+                .stream()
+                .findFirst(); // out of list of customers we are finding the first row and returning.
+//      OR
+//      return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[] { id }, customerRowMapper));
     }
 
     @Override
@@ -60,21 +56,73 @@ public class CustomerJDBCDataAccessService implements CustomerDao{
 
     @Override
     public boolean existsPersonWithEmail(String email) {
-        return false;
+        var sql = """
+                SELECT count(id) 
+                FROM customer
+                WHERE email = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
     }
 
     @Override
     public boolean existPersonWithId(Integer id) {
-        return false;
+        var sql = """
+                SELECT count(id)
+                FROM customer
+                WHERE id = ?
+                """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 
     @Override
     public void deleteCustomerById(Integer id) {
+        var sql = """
+                DELETE 
+                FROM customer
+                WHERE id = ?
+                """;
 
+        int result = jdbcTemplate.update(sql, id);
+        System.out.println("deleteCustomerWithId result: " + result);
     }
 
     @Override
     public void updateCustomerById(Customer customer) {
+        if(customer.getAge() != null) {
+            var sql = """
+                UPDATE customer
+                SET age = ? 
+                WHERE id = ?
+                """;
 
+            int result = jdbcTemplate.update(sql, customer.getAge(), customer.getId());
+            System.out.println("update customer age result: " + result);
+        }
+
+        if(customer.getEmail() != null) {
+            var sql = """
+                UPDATE customer
+                SET email = ? 
+                WHERE id = ?
+                """;
+
+            int result = jdbcTemplate.update(sql, customer.getEmail(), customer.getId());
+            System.out.println("update customer email result: " + result);
+        }
+
+        if(customer.getName() != null) {
+            var sql = """
+                UPDATE customer
+                SET name = ? 
+                WHERE id = ?
+                """;
+
+            int result = jdbcTemplate.update(sql, customer.getName(), customer.getId());
+            System.out.println("update customer name result: " + result);
+        }
     }
 }

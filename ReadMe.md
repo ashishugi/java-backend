@@ -1,3 +1,12 @@
+
+<h2>TOPIC's</h2>
+<ul>
+    <li>[Spring Basics]()</li>
+    <li>[JDBC]()</li>
+    <li>[Testing (Unit + Integration)]()</li>
+</ul>
+
+<h4>Spring Basic's</h4>
 1. @SpringBootApplication: Indicates that this is the spring boot application and its starts from this file. This annotation is equivalent to @SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan
 2. @Configuration: Used to create the beans, conventionally called AppConfig. Ex: if you want to bind your database username and password to your bean, then we can use this annotation.
 3. @EnableAutoConfiguration: It enable the spring to get the configuration based on JAR files available on classpath. It can pre-configure the library you use without your intervention. Ex: we have tomcat server, if we use @EnableAutoConfiguration then that tomcat get autoconfiguration and can be used directly without configuring us the tomcat. 
@@ -79,7 +88,7 @@
 21. frontend  --> HTTP request --> API Layer --> Bussiness Layer --> DAO --> Data base
 22. CustomerController --> CustomerService --> CustomerDao(Interface).
     CustomerDataAccessService(implements CustomerDao) --> DataBase
-23.  Dependency Injection/Beans: Spring is a dependency injection framework, hence this part is managed by spring.
+23. Dependency Injection/Beans: Spring is a dependency injection framework, hence this part is managed by spring.
     Ex : CustomerService cs = new CustomerService(new CustomerDataAccessService());
     We do not need to do or manage it like above. Spring does this for us.  
     How Spring initialise this for us ? Spring has a concept of beans, these beans are then can be accessed anywhere throughout the application.

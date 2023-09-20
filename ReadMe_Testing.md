@@ -713,6 +713,257 @@
     }
     }
     ```
-20. asddsafasdf
+    
+<h3>Integration Testing</h3>
 
-<h4>Last Video: 161</h4>
+1. @SpringBootTest: We will using SpringBootTest(as this load whole applicationContext). While doing IntegrationTest we would require whole applicationContext.
+    By default it will not start a server. We can use webEnvironments of @SpringBootTest to define how our test will run. 
+    Ex: 
+   1. MOCK: It loads web applicationContext and provides mock web environment. Embedded server are not started while using this annotation. If a
+        web environment is not available in classpath then this mode fallbacks on to create a regular non-web applicationContext. It can be conjunction of
+        @AutoConfigureMockMvc or @AutoConfigureWebTestClient for mock based testing for our web-application.
+   2. RANDOM_PORT: This will setup the ITTest server. When you use @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT) you test with a real http server. In this case, you need to use a TestRestTemplate.
+      This is helpful when you want to test some surrounding behavior related to the web layer.
+   3. DEFINED_PORT:
+   4. NONE:
+2. @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT): This is responsible to creating the IntegrationTest server. 
+3. Testing with running server:This would be responsible for making RestApi calls. This would help us to send http request to our server. We have to install webTestClient (it provides actual https call)
+    ```
+   <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+            <scope>test</scope>
+    </dependency>
+   ```
+4. @Autowired customerController: Never do this. As we do not want to actually call this, we just wanted to make http request.
+5. Integration test sample example:
+   ```
+   package com.amigoscode.journey;
+
+    import com.amigoscode.AbstractTestcontainers;
+    import com.amigoscode.customer.Customer;
+    import com.amigoscode.customer.CustomerRegistrationRequest;
+    import com.amigoscode.customer.CustomerUpdateRequest;
+    import com.github.javafaker.Faker;
+    import org.junit.jupiter.api.Test;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.test.context.SpringBootTest;
+    import org.springframework.core.ParameterizedTypeReference;
+    import org.springframework.http.MediaType;
+    import org.springframework.test.web.reactive.server.WebTestClient;
+    import reactor.core.publisher.Mono;
+    
+    import java.util.List;
+    import java.util.Random;
+    import java.util.UUID;
+    
+    import static org.assertj.core.api.Assertions.assertThat;
+    
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+    public class CustomerIntegrationTest extends AbstractTestcontainers {
+
+    @Autowired
+    private WebTestClient webTestClient;
+    private static final Random RANDOM = new Random();
+    private static final String CUSTOMER_URI = "/api/v1/customers";
+
+    @Test
+    void canRegisterACustomer() {
+
+        //1. create a registration request
+        Faker faker = new Faker();
+        String name = faker.name().fullName();
+        String email = faker.name().lastName() + "-" + UUID.randomUUID() + "@yahoo.com";
+        int age = RANDOM.nextInt(1, 100);
+
+        CustomerRegistrationRequest customerRegistrationRequest = new CustomerRegistrationRequest(
+                name, email, age
+        );
+
+        //2. send a post request
+        webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(customerRegistrationRequest), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        //3. get all customer
+        List<Customer> allCustomer = webTestClient.get()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        //4. make sure that customer is present
+        Customer expectedCustomer = new Customer(
+                name, email, age
+        );
+        assertThat(allCustomer).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id")
+                .contains(expectedCustomer);
+
+
+        // get customer by Id
+        int id = allCustomer.stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(c -> c.getId())
+                .findFirst()
+                .orElseThrow();
+
+        expectedCustomer.setId(id);
+
+        webTestClient.get()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(new ParameterizedTypeReference<Customer>() {})
+                .isEqualTo(expectedCustomer);
+
+    }
+
+    @Test
+    void canDeleteCustomer() {
+        //1. create a registration request
+        Faker faker = new Faker();
+        String name = faker.name().fullName();
+        String email = faker.name().lastName() + "-" + UUID.randomUUID() + "@yahoo.com";
+        int age = RANDOM.nextInt(1, 100);
+
+        CustomerRegistrationRequest customerRegistrationRequest = new CustomerRegistrationRequest(
+                name, email, age
+        );
+
+        //2. send a post request
+        webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(customerRegistrationRequest), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        //3. get all customer
+        List<Customer> allCustomer = webTestClient.get()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        //4. get customer by Id
+        int id = allCustomer.stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(c -> c.getId())
+                .findFirst()
+                .orElseThrow();
+
+        //5. delete customer
+        webTestClient.delete()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+
+        //6. check if delete customer still exists or not
+        webTestClient.get()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void canUpdateCustomer() {
+        //1. create a registration request
+        String name = "Aditya";
+        String email = "aditya1" + "@yahoo.com";
+        int age = 19;
+
+        CustomerRegistrationRequest customerRegistrationRequest = new CustomerRegistrationRequest(
+                name, email, age
+        );
+
+        //2. send a post request
+        webTestClient.post()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(customerRegistrationRequest), CustomerRegistrationRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        //3. get all customer
+        List<Customer> allCustomer = webTestClient.get()
+                .uri(CUSTOMER_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(new ParameterizedTypeReference<Customer>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
+        //4. get customer by Id
+        int id = allCustomer.stream()
+                .filter(c -> c.getEmail().equals(email))
+                .map(c -> c.getId())
+                .findFirst()
+                .orElseThrow();
+
+        //5. update customer
+        String updatedName = "Abhishek";
+        String updatedEmail = "abhishek1@yahoo.com";
+        int updatedAge = 26;
+        CustomerUpdateRequest customerUpdateRequest =
+                new CustomerUpdateRequest(updatedName, updatedEmail, updatedAge);
+
+        webTestClient.put()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(customerUpdateRequest), CustomerUpdateRequest.class)
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+
+        //6. check the updated customer
+        Customer actualCustomer = webTestClient.get()
+                .uri(CUSTOMER_URI + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(new ParameterizedTypeReference<Customer>() {})
+                .returnResult().getResponseBody();
+
+        Customer expectedCustomer = new Customer(
+                id, updatedName, updatedEmail, updatedAge
+        );
+
+        assertThat(actualCustomer).isEqualTo(expectedCustomer);
+    }
+    }
+   ```
+6. 
+
+<h4>Last Video: 174</h4>

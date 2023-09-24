@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -51,7 +52,18 @@ public abstract class AbstractTestcontainers {
         );
     }
 
-    private static DataSource getDataSource() { // build the datasource for JDBC contructor
+    @Container
+    protected static final RabbitMQContainer rabbitMQContainer = new RabbitMQContainer("rabbitmq:latest");
+
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.rabbitmq.host", rabbitMQContainer::getHost);
+        registry.add("spring.rabbitmq.port", rabbitMQContainer::getAmqpPort);
+        registry.add("spring.rabbitmq.username", rabbitMQContainer::getAdminUsername);
+        registry.add("spring.rabbitmq.password", rabbitMQContainer::getAdminPassword);
+    }
+
+    private static DataSource getDataSource() { // build the datasource for JDBC constructor
         DataSourceBuilder builder = DataSourceBuilder.create()
                 .driverClassName(postgreSQLContainer.getDriverClassName())
                 .url(postgreSQLContainer.getJdbcUrl())

@@ -1,5 +1,6 @@
 package com.amigoscode.rabbitmq;
 
+import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,10 +13,8 @@ public class QueueConfig {
     @Value("${queue.name}")
     private String message;
 
-    @Bean
+    @Bean("queue-without-routingKey")
     public Queue sentMessage() {
         return new Queue(message, true);
     }
-
-
 }

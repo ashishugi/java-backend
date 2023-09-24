@@ -5,6 +5,7 @@ import com.amigoscode.customer.Customer;
 import com.amigoscode.customer.CustomerRegistrationRequest;
 import com.amigoscode.customer.CustomerUpdateRequest;
 import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -26,6 +28,14 @@ public class CustomerIntegrationTest extends AbstractTestcontainers {
     private WebTestClient webTestClient;
     private static final Random RANDOM = new Random();
     private static final String CUSTOMER_URI = "/api/v1/customers";
+
+    @BeforeEach
+    public void setUp() {
+        // increasing timeout - as getting error of timeout - IllegalState Timeout on blocking read for 5000000000 NANOSECONDS
+        webTestClient = webTestClient.mutate()
+                .responseTimeout(Duration.ofMillis(60000))
+                .build();
+    }
 
     @Test
     void canRegisterACustomer() {

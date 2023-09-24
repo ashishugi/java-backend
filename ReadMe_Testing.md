@@ -730,8 +730,8 @@
 3. Testing with running server:This would be responsible for making RestApi calls. This would help us to send http request to our server. We have to install webTestClient (it provides actual https call)
     ```
    <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
             <scope>test</scope>
     </dependency>
    ```
@@ -964,6 +964,18 @@
     }
     }
    ```
-6. 
+
+6. <h3>Running, Testing with Test Containers also Rabbit Module</h3>
+   1. Run docker desktop
+   2. to run rabbitMQ in main application :  ```docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management```
+   3. Terminal: Add the debugging point in unit/integration test so that we can check the DB in docker container else these containers get destroyed after test completes running.
+      1. ```docker ps``` : this shows all the running containers
+      2. ```docker exec -it container_name bash``` : this takes you inside the container and open bash to running command
+      3. ```psql -U username -d db_name``` : this command will help you to connect with postgresql db (psql -U username -d customer-dao-unit-test)
+      4. ```\l``` : show list of DB the container has.
+      5. ```SELECT * from table_name```: we can write the SQL query for table it has.
+7. dgsd
+
+
 
 <h4>Last Video: 174</h4>

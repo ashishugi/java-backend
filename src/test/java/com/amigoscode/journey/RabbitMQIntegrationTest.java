@@ -1,6 +1,7 @@
 package com.amigoscode.journey;
 
 import com.amigoscode.AbstractTestcontainers;
+import com.amigoscode.RabbitMQTestContainer;
 import com.amigoscode.rabbitmq.QueueMessage;
 import com.amigoscode.rabbitmq.SendMessage;
 import org.awaitility.Awaitility;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RabbitMQIntegrationTest extends AbstractTestcontainers {
+public class RabbitMQIntegrationTest extends AbstractTestcontainers implements RabbitMQTestContainer {
     @Autowired
     private WebTestClient webTestClient;
 
@@ -35,7 +36,7 @@ public class RabbitMQIntegrationTest extends AbstractTestcontainers {
     public void setUp() {
         // increasing timeout - as getting error of timeout - IllegalState Timeout on blocking read for 5000000000 NANOSECONDS
         webTestClient = webTestClient.mutate()
-                .responseTimeout(Duration.ofMillis(60000))
+                .responseTimeout(Duration.ofMillis(50000))
                 .build();
     }
 
@@ -62,6 +63,7 @@ public class RabbitMQIntegrationTest extends AbstractTestcontainers {
                 .getResponseBody();
 
         assertThat(messages).isNotEmpty();
+        assertThat(messages.size()).isEqualTo(1);
     }
 
     @Test

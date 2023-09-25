@@ -28,13 +28,12 @@ public abstract class AbstractTestcontainers {
         ).load();
         flyway.migrate();
     }
-
     @Container
-    protected static final PostgreSQLContainer<?> postgreSQLContainer =
+    protected static final PostgreSQLContainer<?>  postgreSQLContainer =
             new PostgreSQLContainer<>("postgres:latest")
                     .withDatabaseName("customer-dao-unit-test")
                     .withUsername("username")
-                    .withPassword("password"); // 'postgres:latest' - takes the latest image of postgres from docker
+                    .withPassword("password"); // 'postgres:latest' - takes the latest image of postgres from docker; // 'postgres:latest' - takes the latest image of postgres from docker
 
     @DynamicPropertySource
     private static void registerDataSourceProperties(DynamicPropertyRegistry registry) { // This is used to connect our test with the database, as it will map these properties with application.yml
@@ -50,17 +49,6 @@ public abstract class AbstractTestcontainers {
                 "spring.datasource.password",
                 postgreSQLContainer::getPassword
         );
-    }
-
-    @Container
-    protected static final RabbitMQContainer rabbitMQContainer = new RabbitMQContainer("rabbitmq:latest");
-
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.rabbitmq.host", rabbitMQContainer::getHost);
-        registry.add("spring.rabbitmq.port", rabbitMQContainer::getAmqpPort);
-        registry.add("spring.rabbitmq.username", rabbitMQContainer::getAdminUsername);
-        registry.add("spring.rabbitmq.password", rabbitMQContainer::getAdminPassword);
     }
 
     private static DataSource getDataSource() { // build the datasource for JDBC constructor

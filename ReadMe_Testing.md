@@ -974,7 +974,7 @@
       3. ```psql -U username -d db_name``` : this command will help you to connect with postgresql db (psql -U username -d customer-dao-unit-test)
       4. ```\l``` : show list of DB the container has.
       5. ```SELECT * from table_name```: we can write the SQL query for table it has.
-7. dgsd
+7. Make sure we make different - different interface of containers for each module we use via TestContainer : refer - https://manerajona.medium.com/testing-microservices-with-testcontainers-88fe40363bb3 and https://stackoverflow.com/questions/57512375/why-the-test-container-with-the-rabbitmq-is-creates-every-time-anew-and-is-not-s
 
 
 

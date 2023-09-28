@@ -6,6 +6,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/customer
+    username: username
+    password: password
   jpa:
     hibernate:
       ddl-auto: none

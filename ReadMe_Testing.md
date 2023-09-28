@@ -391,11 +391,11 @@
     ```
 19. Sample Unit Test code for reference: 
     ```
-    package com.amigoscode.customer;
+    package com.panther.customer;
 
-    import com.amigoscode.exception.DuplicateResourceException;
-    import com.amigoscode.exception.RequestValidationException;
-    import com.amigoscode.exception.ResourceNotFound;
+    import com.panther.exception.DuplicateResourceException;
+    import com.panther.exception.RequestValidationException;
+    import com.panther.exception.ResourceNotFound;
     import org.junit.jupiter.api.BeforeEach;
     import org.junit.jupiter.api.Test;
     import org.junit.jupiter.api.extension.ExtendWith;
@@ -738,12 +738,12 @@
 4. @Autowired customerController: Never do this. As we do not want to actually call this, we just wanted to make http request.
 5. Integration test sample example:
    ```
-   package com.amigoscode.journey;
+   package com.panther.journey;
 
-    import com.amigoscode.AbstractTestcontainers;
-    import com.amigoscode.customer.Customer;
-    import com.amigoscode.customer.CustomerRegistrationRequest;
-    import com.amigoscode.customer.CustomerUpdateRequest;
+    import com.panther.AbstractTestcontainers;
+    import com.panther.customer.Customer;
+    import com.panther.customer.CustomerRegistrationRequest;
+    import com.panther.customer.CustomerUpdateRequest;
     import com.github.javafaker.Faker;
     import org.junit.jupiter.api.Test;
     import org.springframework.beans.factory.annotation.Autowired;

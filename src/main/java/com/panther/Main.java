@@ -35,7 +35,7 @@ public class Main {
 
             Customer customer = new Customer(firstName+ " " + lastName, firstName.toLowerCase() + "."+ lastName.toLowerCase() + "@example.com", random.nextInt(16, 99)); // [16, 99] close/inner bound
 
-//            customerRepository.save(customer);
+            customerRepository.save(customer);
         };
     }
 

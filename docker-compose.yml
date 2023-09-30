@@ -13,6 +13,33 @@ services:
     networks:
       - db
     restart: unless-stopped
+  queue:
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5662:5672"
+      - "15662:15672"
+    networks:
+      - db
+    restart: unless-stopped
+  customer-api:
+    container_name: customer-api
+    image: ashishkumargupta/customer-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
+      SPRING_RABBITMQ_HOST: queue
+      SPRING_RABBITMQ_PORT: 5672
+    ports:
+      - "8088:8080"
+    networks:
+      - db
+    depends_on:
+      - db
+      - queue
+    restart: unless-stopped
 
 networks:
   db:

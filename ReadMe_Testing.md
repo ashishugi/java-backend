@@ -59,9 +59,9 @@
         }
     }
    ```
-    docker exec -it reverent_johnson bash // reverent_johnson -> containerName
-    psql -U username -d customer-dao-unit-test // U = username, d =database
-    \c customer-dao-unit-test // connect with database
+    `docker exec -it reverent_johnson bash` // reverent_johnson -> containerName
+    `psql -U username -d customer-dao-unit-test` // U = username, d =database
+    `\c customer-dao-unit-test` // connect with database
 6. Setting Up Flyway for migrating DB to test DB - 
     ```
       @Test
@@ -78,9 +78,9 @@
     }
    ```
     after you connect with DB (\c customer-dao-unit-test)
-    \dt (shows two table customer and flyway_schema_history, this means db migration have taken correctly)
-    \d (can also see customer_id_sequence index that we add during db migration in flyway)
-    SELECT * FROM customer; (SQL)
+    `\dt` (shows two table customer and flyway_schema_history, this means db migration have taken correctly)
+    `\d` (can also see customer_id_sequence index that we add during db migration in flyway)
+    `SELECT * FROM customer; `(SQL)
 7. Connecting testContainer postgresql Database to application, so that this DB can be accessed by our test. This is used to connect our test with the database, as it will map these properties with application.yml
     ```
        @DynamicPropertySource
@@ -150,11 +150,11 @@
 8. @SpringBootTest: We should never use it for Unit Test because this will brake entire application if not correctly configured.
     and also load whole application Context. In this applicationContext there may be bean that are not required for out unit test.
     Hence our unit test may get slow.
-    @SpringBootTest ====> wrong use
+    `@SpringBootTest` ====> wrong use
     public class CustomerUnitTest{}
 9. Abstract class :  A class whos object cannot be created, but this abstract class can only we inherited into some other class.
     We may treat abstract class as a base class.
-10. @Autowired vs Constructor Injection: both are same, both will take underTest from springContext and initialise the underTest
+10. `@Autowired` vs Constructor Injection: both are same, both will take underTest from springContext and initialise the underTest
     constructor injection: 
     ```
     class CustomerRepositoryTest {
@@ -967,15 +967,11 @@
 
 6. <h3>Running, Testing with Test Containers also Rabbit Module</h3>
    1. Run docker desktop
-   2. to run rabbitMQ in main application :  ```docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management```
+   2. to run rabbitMQ in main application :  `docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management`
    3. Terminal: Add the debugging point in unit/integration test so that we can check the DB in docker container else these containers get destroyed after test completes running.
-      1. ```docker ps``` : this shows all the running containers
-      2. ```docker exec -it container_name bash``` : this takes you inside the container and open bash to running command
-      3. ```psql -U username -d db_name``` : this command will help you to connect with postgresql db (psql -U username -d customer-dao-unit-test)
-      4. ```\l``` : show list of DB the container has.
-      5. ```SELECT * from table_name```: we can write the SQL query for table it has.
+      1. `docker ps` : this shows all the running containers
+      2. `docker exec -it container_name bash` : this takes you inside the container and open bash to running command
+      3. `psql -U username -d db_name` : this command will help you to connect with postgresql db (`psql -U username -d customer-dao-unit-test`)
+      4. `\l` : show list of DB the container has.
+      5. `SELECT * from table_name`: we can write the SQL query for table it has.
 7. Make sure we make different - different interface of containers for each module we use via TestContainer : refer - https://manerajona.medium.com/testing-microservices-with-testcontainers-88fe40363bb3 and https://stackoverflow.com/questions/57512375/why-the-test-container-with-the-rabbitmq-is-creates-every-time-anew-and-is-not-s
-
-
-
-<h4>Last Video: 174</h4>

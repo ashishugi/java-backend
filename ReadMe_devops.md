@@ -174,7 +174,111 @@ We have docker image, now we can deploy this image into cloud. AWS is a cloud se
 6. Similar as above companies usually make different environment(ECS) like pre-prod, staging, prod etc. to different purpose like testing etc.
 7. EKS (Elastic Kubernetes service): It similar alternate way to deploy your application/service.
 
-<h4>Github Actions (CI/CD - Automation)</h4>
+<h4>Github Actions https://docs.github.com/en/actions (CI/CD - Automation)</h4>
+
+1. Workflow: It is an automated procedure that we add to our repository. Workflows are made up of one or more jobs that can be scheduled or triggered by an event. Workflows can be used to build, test package, release or deploy a project on github. 
+   events -> runner1 (scrip1 -> script2 -> some action) -> runner2 (scrip1 -> script2 -> some action)
+2. Events: Triggered when something happens (ex: push, pull, release). Webhooks, manual events, scheduled events.
+3. Jobs - steps -  actions: 
+   1. Jobs: set of steps which run in parallel by default.
+   2. Step: Individual task that can be run commands in Jobs. Action or shell command.
+   3. Actions: Standalone commands that are combined into steps to create Jobs. 
+4. Runners: They basically server that contains software that are required to run the Jobs. (Ex: ubuntu, macos, windows)
+5. Building CI: It contains planning, code, build, and Tests(unit/Integration/Acceptance). set up postgres -> clone repo -> setup java and maven -> mvn clean verify(to run tests(unit + Integration))
+   1. root create directory as `.github/workflows` must create folder with same name
+   2. inside `.github/workflows` create file backend-ci.yml .
+   3. setup postgres:
+   ```
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       services:
+         postgres:
+           image: postgres
+           env:
+             POSTGRES_USER: username
+             POSTGRES_PASSWORD: password
+             POSTGRES_DB: customer
+           ports:
+             # host: container port
+             - 5332:5432
+           options: >-
+             --health-cmd pg_isready
+             --health-interval 10s
+             --health-timeout 5s
+             --health-retries 5
+   ```
+   4. Clone repo(clone into linux server: https://github.com/marketplace/actions/checkout): 
+      ```
+          steps:
+           - uses: actions/checkout@v4
+      ```
+   5. Setup Java(https://github.com/marketplace/actions/setup-java-jdk): 
+   ```
+   - uses: actions/setup-java@v3
+     with:
+       distribution: 'temurin'
+       java-version: '17'
+       cache: 'maven'
+   ```
+   6. mvn clean verify: -ntp : no logs to show while downloading, -B no text color for logs
+   ```
+         - name: Build and run Unit and Integration Tests with maven
+           run: mvn -ntp -B verify
+   ```
+6. Understanding the CI :
+   ```
+   name: CI - Build Backend
+   
+   on:
+     pull_request:
+       branches:
+         - main
+       paths:
+         - *
+   
+   jobs:
+     build:
+       runs-on: ubuntu-latest
+       services:
+         postgres:
+           image: postgres
+           env:
+             POSTGRES_USER: username
+             POSTGRES_PASSWORD: password
+             POSTGRES_DB: customer
+           ports:
+             # host: container port
+             - 5332:5432
+           options: >-
+             --health-cmd pg_isready
+             --health-interval 10s
+             --health-timeout 5s
+             --health-retries 5
+   
+       defaults:
+         run:
+           working-directory: /
+       steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-java@v3
+           with:
+             distribution: 'temurin'
+             java-version: '17'
+             cache: 'maven'
+         - name: Build and run Unit and Integration Tests with maven
+           run: mvn -ntp -B verify
+   ```
+   1. name : name of the Build/pipeline/step
+   2. on: It will be triggered foe the pull request having any changes compare to main branch
+   3. run-on: ubuntu-latest - It make os linux to run the jobs on.
+   4. services: we have have multiple services that we have used see it from docker-compose file ex: postgres, rabbitMq etc
+   5. default: run : working-directory - path to root pom.xml where we can run mvn verify cmd.
+   6. actions/checkout@v4:  This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+   7. actions/setup-java@v3: download java and maven dependencies.
+   8. cache: will cache the dependencies for next time.
+   9. mvn verify: cmd that we wanted to run and verify.
+7. 
 
 
-<h4>Last Video: 236</h4>
+<h4>Last Video: 247</h4>

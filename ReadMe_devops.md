@@ -141,6 +141,8 @@
 <h4>AWS</h4>
 
 We have docker image, now we can deploy this image into cloud. AWS is a cloud service which allows us to deploy our service without us owning the physical server, dbs etc.
+<img width="1249" alt="Screenshot 2023-10-01 at 5 33 11 PM" src="https://github.com/ashishugi/java-react-fullstack/assets/46626591/2a31ff71-a22a-4890-a6b3-a3b78d7ee03d">
+
 
 1. React/Angular application --> https request --> aws cloud --> VPC --> Public subnet(Load Balancer) --> Private subnet (DB, EC2 etc)
    1. VPC: virtual private network

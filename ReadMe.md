@@ -7,11 +7,11 @@
 </ul>
 
 <h4>Spring Basic's</h4>
-<section id="spring_basics"></section>
-1. @SpringBootApplication: Indicates that this is the spring boot application and its starts from this file. This annotation is equivalent to @SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan
-2. @Configuration: Used to create the beans, conventionally called AppConfig. Ex: if you want to bind your database username and password to your bean, then we can use this annotation.
-3. @EnableAutoConfiguration: It enable the spring to get the configuration based on JAR files available on classpath. It can pre-configure the library you use without your intervention. Ex: we have tomcat server, if we use @EnableAutoConfiguration then that tomcat get autoconfiguration and can be used directly without configuring us the tomcat. 
-4. @ComponentScan: By default spring searches within the package that the main class is located, along with it child packages. 
+
+1. **@SpringBootApplication**: Indicates that this is the spring boot application and its starts from this file. This annotation is equivalent to @SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan
+2. **@Configuration**: Used to create the beans, conventionally called AppConfig. Ex: if you want to bind your database username and password to your bean, then we can use this annotation.
+3. **@EnableAutoConfiguration**: It enable the spring to get the configuration based on JAR files available on classpath. It can pre-configure the library you use without your intervention. Ex: we have tomcat server, if we use @EnableAutoConfiguration then that tomcat get autoconfiguration and can be used directly without configuring us the tomcat. 
+4. **@ComponentScan**: By default spring searches within the package that the main class is located, along with it child packages. 
 5. SpringApplication.run : launches the spring boot application
 6. Tomcat: It is java web application server. Apache Tomcat is the free and open source implementation of Jakarta servlet, Jakarta Expression language and Websoket technologies.
     Other webservers example: Jetty. <br/>
@@ -21,11 +21,11 @@
    spring:
     main:
      web-application-type: none 
-8. @RestController: for making the class for handle the rest api(request, response)
-9. @GetMapping : type of api-end point/request that we will receive.
+8. **@RestController**: for making the class for handle the rest api(request, response)
+9. **@GetMapping** : type of api-end point/request that we will receive.
 10. Servlet: A process in which we handle the HTTP request and give the response back.
 11. SpringWebMVC: abstract of servlet, helps to handle the http request and make response to the request. Annotation: @Controllers(mark the class as web controller), @RestController = @Controller + @ResponseBody (this says that this class is a controller and all the method in the class will return the JSON response), 
-12. @ResponseBody : It tell the  spring to automatically serialize the return value of this class http response.It converts the object into JSON for easier consumption. It sends the response in JSON.
+12. **@ResponseBody** : It tell the  spring to automatically serialize the return value of this class http response.It converts the object into JSON for easier consumption. It sends the response in JSON.
 13. Record : Class that are immutable. 
 14. JACKSON : Jackson performs the conversion of POJO to JSON and JSON to POJO . "The Java JSON library" or "the best JSON parser for JAVA". It is used in JSON serialisation and JSON deserialization. There are 2 types of data binding :
 

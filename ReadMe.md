@@ -3,7 +3,9 @@
 <ul>
     <li><a href="#spring_basics">Spring Basics</a></li>
     <li><a href="https://github.com/ashishugi/java-react-fullstack/blob/main/ReadMe_JDBC.md" >JDBC</a></li>
-    <li><a href="#">Testing (Unit + Integration)</a></li>
+    <li><a href="https://github.com/ashishugi/java-react-fullstack/blob/main/ReadMe_Testing.md">Testing (Unit + Integration)</a></li>
+    <li><a href="https://github.com/ashishugi/java-react-fullstack/blob/main/ReadMe_building_app_Jar.md">Building Jar using maven plugin</a></li>
+    <li><a href="https://github.com/ashishugi/java-react-fullstack/blob/main/ReadMe_devops.md">Devops (Docker, CI, CD)</a></li>
 </ul>
 
 <h4>Spring Basic's</h4>

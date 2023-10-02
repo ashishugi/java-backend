@@ -187,8 +187,16 @@ We have docker image, now we can deploy this image into cloud. AWS is a cloud se
 5. Building CI: It contains planning, code, build, and Tests(unit/Integration/Acceptance). set up postgres -> clone repo -> setup java and maven -> mvn clean verify(to run tests(unit + Integration))
    1. root create directory as `.github/workflows` must create folder with same name
    2. inside `.github/workflows` create file backend-ci.yml .
-   3. setup postgres:
+   3. setup postgres:https://docs.github.com/en/actions/using-containerized-services/creating-postgresql-service-containers
    ```
+   name: CI - Build Backend
+   
+   on:
+     pull_request:
+       branches:
+         - main
+       paths:
+         - backend-repo/**
    jobs:
      build:
        runs-on: ubuntu-latest
@@ -207,6 +215,10 @@ We have docker image, now we can deploy this image into cloud. AWS is a cloud se
              --health-interval 10s
              --health-timeout 5s
              --health-retries 5
+          
+       defaults:
+         run:
+           working-directory: /path_to_checkout_for_running_cmd(path where you mvn cmd can run -> in root pom.xml)
    ```
    4. Clone repo(clone into linux server: https://github.com/marketplace/actions/checkout): 
       ```
@@ -235,7 +247,7 @@ We have docker image, now we can deploy this image into cloud. AWS is a cloud se
        branches:
          - main
        paths:
-         - *
+         - '**'
    
    jobs:
      build:
@@ -255,10 +267,14 @@ We have docker image, now we can deploy this image into cloud. AWS is a cloud se
              --health-interval 10s
              --health-timeout 5s
              --health-retries 5
-   
-       defaults:
-         run:
-           working-directory: /
+        rabbitmq:
+         image: rabbitmq:3-management-alpine
+         env:
+           RABBITMQ_DEFAULT_USER: guest
+           RABBITMQ_DEFAULT_PASS: guest
+          ports:
+           - 5662:5672
+
        steps:
          - uses: actions/checkout@v4
          - uses: actions/setup-java@v3

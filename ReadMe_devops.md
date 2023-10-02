@@ -5,7 +5,8 @@
    4. Monitoring and logging
 
 <h4>Docker</h4>
-1. Docker is a platform for building, running and shipping application. (https://hub.docker.com/)
+
+1. Docker is a platform for building, running and shipping application (https://hub.docker.com/).
 2. Developers can easily build and deploy applications running in containers.
 3. Local environment is same across any other environment. There won't be any issue if you run it on the other machine. If it works in my machine then it will work in other dev, stage, pre-stage etc environments.
 4. Used in CI/CD workflow.

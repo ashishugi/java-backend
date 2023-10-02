@@ -137,6 +137,42 @@
    volumes:
     db:
    ```
-10. qer
 
-<h4>Last Video: 205</h4>
+<h4>AWS</h4>
+
+We have docker image, now we can deploy this image into cloud. AWS is a cloud service which allows us to deploy our service without us owning the physical server, dbs etc.
+
+1. React/Angular application --> https request --> aws cloud --> VPC --> Public subnet(Load Balancer) --> Private subnet (DB, EC2 etc)
+   1. VPC: virtual private network
+   2. Public subnet: anyone can access this
+   3. Private subnet: not everyone can access here.
+   4. EC2: Virtual computer in aws
+   5. ECS: AWS Elastic container service to run docker containers.
+2. AWS Elastic Beanstalk: It allows us to build the application without knowing the AWS very much. It is an end-to-end web application management. It is an easy-to-use service for deploying and scaling web applications and services developed Java, .Net, PHP, NodeJs, Go, Python, Ruby and Docker on familier servers such as Apache, Nginx, Passenger and IIS.
+   1. You simply upload your code and Elastic Beanstalk automatically handles the deployment, from capacity provisioning, load balancing, and automatic scaling to web application health monitoring, with ongoing fully managed patch and security updates.
+3. EC2:
+   1. Creating Key-Pair: AWS -> EC2 -> key-pair -> create new key-pair - use RSA, .pem, - create -> this will download a .pem file(contains private key) -> this RSA key will help us to connect with EC2 with our local terminal using SSH(similarly as we do with github ssh)
+   2. Save this key pair: --> go to root -> mkdir keypairs -->  move the downloaded file here (`mv ~/Downloads/file_name.pem keypairs`)
+4. Running elastic beanstalk: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_ecs.html
+   1. Creating Application:  AWS -> elastic Beanstalk -> create application -> application_name, tags(name: any-tag, environment: test ), platform: docker, platformVersion: recommended, platformBranch: ECS running on 64bit amazon linux 2, application_code : upload the code(make Dockerrun.aws.json file) -> source code origin (select Dockerrun.aws.json file).
+   2. application code tags(name: customer-api) -> configure more options -> presets (single instance - free tier) -> software(keep same) -> instances (same) ->EC2 security group(default group) -> save -> capacity (auto scaling, enviroment type - single or load balance(in case of load balance there would be multiple instance to balance and scale up) - keep single instance for now)(Processor : arm64)(instanceType: t4g.micro) -> save
+   3. load balance(fill if required later - right now not required) -> security (virtual machine permission: select you key_pair public key created on aws from drop down) -> save -> Database (Engine: postgresql)(version - select latest 14.5)(instance class: db.t2.small or db.t3.small)(storage: 20)(username: username, password: password - as given for postgres in application.yml)(availability: low) (database deletion policy: delete)-> save
+   4. Network (VPC :default)(check public IP address checkbox)(Instance subnet: eu-west-1a, eu-west-1b)(database subnet: eu-west-1a, eu-west-1b) -> save -> **create APP**
+   5. After creating app -> if we go ECS -> cluster -> one cluster is created (inside this cluster one EC2 is also created + 1 RDS database )
+   6. Database -> AWS -> RDS -> 1 db also created (this database is not publicly available, it is only available once we are inside VPC (virtual private cloud))
+   7. If you see the logs now from ECS logs, there it would be some db connection issue, this is because in our Dockerrun.aws.json there is wrong datasource url("jdbc:postgresql://TODO:5432/customer"), we have to correct it. AWS -> RDS -> DB instances -> Find DB identifier -> copy the endpoint -> update Dockerrun.aws.json(jdbc:postgresql://COPIED_VALUE_OF_ENDPOINT:5432/customer) -> redeploy it(ECS -> cluster -> upload and deploy -> upload file -> upload Dockerrun.aws.json file -> deploy)
+   8. After above step you will connect with DB but still get error as "FATAL error 'customer' db does not exist" -> AWS -> EC2 -> find our EC2 -> copy public IP address -> open local terminal of system -> go inside the keypair/  folder where we have stored the private key -> inside this keypair we can ssh the EC2 -> before that we have to give permission that only we can read-write this file run this cmd (`chmod 600 keypair_file.pem`), this is to be run only once after you have the permission ->  `ssh -i keypair_file.pem ec2-user@public_ip_address` -> we get inside the EC2 instance of our application in the terminal
+      `sudo -i` (will make our cmd as root user) -> `docker ps`(here we can see our instance image ex: amazon/amazon-ecs-agent:latest, also our image as well ashishkumargupta/customer-api) -> to fix the issue -> `docker run --rm -it postgres:alpine bash` -> `psql -U username -d postgres -h host_endpoint_that_we_used_above` -> will ask for password (password) -> we get inside postgres -> `\l` -> `create database customer;` (similar as we use to do in docker) -> cntrl + d 2times to quit -> now we can check the logs error would be removed. 
+   9. Now if you again connect with data base (`psql -U username -d postgres -h host_endpoint_that_we_used_above`) and `select * from customer;` we will get the entries/rows from database. You can also test you api, ECS -> cluster -> url
+   10. Although we have connected directly to our machine (EC2) from our local, but usually we do not do this. We have a tool **BASTIONS** as a intermediate. We ssh/connect with BASTIONS and then BASTIONS connect with further machines. BASTIONS is located at Public subnet . USER -> BASTIONS -> OUR EC2, DB etc.
+   11. CloudFormation: It is responsible for making all the resources. AWS -> cloudFormation -> open your deployed resource -> you can see all the resource made for deploying this application. If you click on view in Designer then it will open a mind-map of the resources used.
+   12. creating ECS basically creates a cluster with basic need and machine ex: EC2 etc. 
+   13. About ECS(Elastic container service similar as Docker container hub): If we are not using Kubernetes(EKS) then we must use ECS.  AWS  -> containers -> Elastic Container Service ->  
+5. From above creation of AWS resource we have done it via UI. But all the above things can be done using tools like - terraform(HashiCrop) - written in golang, cloudFormation, Pulumi etc.
+6. Similar as above companies usually make different environment(ECS) like pre-prod, staging, prod etc. to different purpose like testing etc.
+7. EKS (Elastic Kubernetes service): It similar alternate way to deploy your application/service.
+
+<h4>Github Actions (CI/CD - Automation)</h4>
+
+
+<h4>Last Video: 236</h4>

@@ -38,3 +38,4 @@ jobs:
           cache: 'maven'
       - name: Build and run Unit and Integration Tests with maven
         run: mvn -ntp -B verify
+
